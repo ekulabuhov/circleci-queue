@@ -12,7 +12,7 @@ parameters:
 
 workflows:
   build-deploy:
-    jobs:
+    jobs: 
       - queue/block_workflow:
           only-on-branch: staging
           time: '10'
