@@ -135,7 +135,7 @@ commands:
           command: |
             circleci config pack src/ > packed.yml
             circleci orb validate packed.yml
-  pr-comment:
+  pr-comment: 
     description: add nessage to pr this build originated from
     steps:
       - run:
