@@ -32,6 +32,10 @@ parameters:
     type: env_var_name
     default: CIRCLECI_API_KEY
     description: "In case you use a different Environment Variable Name than CIRCLECI_API_KEY, supply it here."
+  debug:
+    type: boolean
+    default: false
+    description: "Enable to see additional output"
 steps:
   - run:
       name: Queue Until Front of Line
@@ -70,6 +74,11 @@ steps:
             cat $TESTING_MOCK_RESPONSE > /tmp/jobstatus.json
           else
             echo "Attempting to access CircleCI api. If the build process fails after this step, ensure your << parameters.circleci-api-key >> is set."
+
+            if [ "<<parameters.debug>>" != "true" ];then
+              echo $jobs_api_url_template
+            fi 
+
             curl -f -s $jobs_api_url_template > /tmp/jobstatus.json
             echo "API access successful"
           fi
@@ -77,7 +86,14 @@ steps:
 
         fetch_active_workflows(){
           cp /tmp/jobstatus.json /tmp/augmented_jobstatus.json
-          for workflow in `jq -r ".[] | .workflows.workflow_id" /tmp/augmented_jobstatus.json | uniq`
+          
+          if [ "<<parameters.debug>>" != "true" ];then
+            echo
+            cat /tmp/augmented_jobstatus.json
+            echo
+          fi
+
+          for workflow in `jq -r ".[] | select( .status | contains(\"running\")) | .workflows.workflow_id" /tmp/augmented_jobstatus.json | uniq`
           do
             echo "Checking time of workflow: ${workflow}"
             workflow_file=/tmp/workflow-${workflow}.json

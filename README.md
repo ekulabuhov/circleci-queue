@@ -1,5 +1,5 @@
 # CircleCI Concurrency Control Orb
-
+ 
 [![CircleCI](https://img.shields.io/circleci/build/gh/ekulabuhov/circleci-queue)](https://circleci.com/gh/ekulabuhov/circleci-queue/tree/master) 
 [![GitHub license](https://img.shields.io/github/license/ekulabuhov/circleci-queue)](https://github.com/ekulabuhov/circleci-queue/blob/master/LICENSE)
 [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/ekulabuhov/queue)](https://circleci.com/orbs/registry/orb/ekulabuhov/queue)
@@ -13,7 +13,7 @@ See https://github.com/ekulabuhov/circleci-challenge as an example using blue/gr
 
 ## Basic Usage
 
-This adds concurrency limits by ensuring any jobs with this step will only continue once no previous builds are running. It supports a single argument of how many minutes to wait before aborting itself and it requires a single Environment Variable `CIRCLECI_API_KEY` - which can be created in [account settings](https://circleci.com/account/api).
+This adds concurrency limits by ensuring any jobs with this step will only continue once no previous builds are running. It supports a single argument of how many minutes to wait before aborting itself and it requires a single Environment Variable `CIRCLECI_API_KEY` - which can be created in [account settings](https://circleci.com/account/api). EK: It needs a personal API key because the script mixes v1 and v2 calls. Unfortunately, v2 calls don't support project API keys.
 
 ## Screenshots / Examples
 
@@ -40,3 +40,8 @@ See https://circleci.com/orbs/registry/orb/ekulabuhov/queue#usage-examples for c
 ## Note
 
 Queueing is not supported on forked repos. If a queue from a fork happens the queue will immediately exit and the next step of the job will begin.
+
+# Publishing
+circleci config pack src/ > packed.yml
+circleci orb publish packed.yml ekulabuhov/circle-queue@dev:8
+circleci orb publish promote ekulabuhov/circle-queue@dev:8 patch
