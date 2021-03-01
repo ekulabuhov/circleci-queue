@@ -1,6 +1,9 @@
   
 version: 2.1
 
+orbs:
+  queue: eddiewebb/queue@1.5.0
+
 parameters:
   orbname:
     type: string
@@ -10,11 +13,12 @@ parameters:
 workflows:
   build-deploy:
     jobs:
+      - queue/block_workflow:
+          only-on-branch: master
+          time: '10'
       - validate:
-          filters:
-            branches:
-              ignore: 
-                - master
+          requires:
+            - queue/block_workflow
       - test:
           requires: 
             - validate
@@ -36,6 +40,9 @@ jobs:
       - image: cimg/base:2019.08
     working_directory: ~/repo
     steps:
+      - run:
+          name: Sleep
+          command: sleep 60
       - checkout
       - install-circleci
       - pack-and-validate
