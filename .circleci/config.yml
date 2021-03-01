@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  queue: ekulabuhov/circle-queue@1.0.0
+  queue: ekulabuhov/circle-queue@1.0.1
 
 parameters:
   orbname:
