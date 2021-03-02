@@ -75,7 +75,7 @@ steps:
           else
             echo "Attempting to access CircleCI api. If the build process fails after this step, ensure your << parameters.circleci-api-key >> is set."
 
-            if [ "<<parameters.debug>>" != "true" ];then
+            if [ "<<parameters.debug>>" = "true" ];then
               echo $jobs_api_url_template
             fi 
 
@@ -87,10 +87,8 @@ steps:
         fetch_active_workflows(){
           cp /tmp/jobstatus.json /tmp/augmented_jobstatus.json
           
-          if [ "<<parameters.debug>>" != "true" ];then
-            echo
+          if [ "<<parameters.debug>>" = "true" ];then
             cat /tmp/augmented_jobstatus.json
-            echo
           fi
 
           for workflow in `jq -r ".[] | select( .status | contains(\"running\")) | .workflows.workflow_id" /tmp/augmented_jobstatus.json | uniq`
@@ -123,8 +121,8 @@ steps:
           if [ "<<parameters.block-workflow>>" = "true" ] ;then
             echo "Orb parameter block-workflow is true."
             echo "This job will block until no previous workflows have *any* jobs running."
-            oldest_running_build_num=`jq 'sort_by(.workflows.created_at)| .[0].build_num' /tmp/augmented_jobstatus.json`
-            oldest_commit_time=`jq 'sort_by(.workflows.created_at)| .[0].workflows.created_at' /tmp/augmented_jobstatus.json`
+            oldest_running_build_num=`jq 'map(select(.workflows.created_at != null)) | sort_by(.workflows.created_at)| .[0].build_num' /tmp/augmented_jobstatus.json`
+            oldest_commit_time=`jq 'map(select(.workflows.created_at != null)) | sort_by(.workflows.created_at)| .[0].workflows.created_at' /tmp/augmented_jobstatus.json`
           else
             echo "Orb parameter block-workflow is false."
             echo "Only blocking execution if running previous jobs matching this job: ${CIRCLE_JOB}"
